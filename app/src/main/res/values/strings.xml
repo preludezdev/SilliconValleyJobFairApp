@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">SiliconValleyJobFair</string>
+    <string name="tv_main">TODO List</string>
+    <string name="title">제목</string>
+    <string name="content">내용</string>
+    <string name="update">수정</string>
+    <string name="add">추가</string>
 </resources>
+

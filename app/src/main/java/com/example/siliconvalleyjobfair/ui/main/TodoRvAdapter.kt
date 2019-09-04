@@ -1,31 +1,43 @@
-package com.example.siliconvalleyjobfair.ui
+package com.example.siliconvalleyjobfair.ui.main
 
-import android.util.Log
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.siliconvalleyjobfair.R
 import com.example.siliconvalleyjobfair.data.Todo
+import com.example.siliconvalleyjobfair.data.TodoDatabase
 import kotlinx.android.synthetic.main.item_todo.view.*
 
-class TodoRvAdapter : RecyclerView.Adapter<TodoRvAdapter.TodoViewHolder>() {
+class TodoRvAdapter(private val context: Context, private val clickEvent: (todo: Todo) -> Unit) :
+    RecyclerView.Adapter<TodoRvAdapter.TodoViewHolder>() {
 
-    private val data = mutableListOf<Todo>()
+    private val todoList = mutableListOf<Todo>()
 
-    fun addItem(item: Todo) {
-        data.add(item)
+    fun setItems(items: List<Todo>) {
+        todoList.clear()
+        todoList.addAll(items)
         notifyDataSetChanged()
     }
 
+    fun deleteItem(position: Int) {
+        val deletedTodo = todoList.removeAt(position)
+
+        Thread(Runnable {
+            TodoDatabase.getInstance(context).getTodoDao().deleteTodo(deletedTodo)
+        }).start()
+
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder =
         TodoViewHolder(parent)
 
 
-    override fun getItemCount(): Int = data.size
+    override fun getItemCount(): Int = todoList.size
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
-        holder.bindView(data[position])
+        holder.bindView(todoList[position])
     }
 
     inner class TodoViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
@@ -39,10 +51,11 @@ class TodoRvAdapter : RecyclerView.Adapter<TodoRvAdapter.TodoViewHolder>() {
 
         init {
             btEdit.setOnClickListener {
-               Log.d("test", "btEdit Clicked!!")
+                clickEvent(todoList[adapterPosition])
             }
+
             btDelete.setOnClickListener {
-                Log.d("test", "btDelete Clicked!!")
+                deleteItem(adapterPosition)
             }
         }
 
