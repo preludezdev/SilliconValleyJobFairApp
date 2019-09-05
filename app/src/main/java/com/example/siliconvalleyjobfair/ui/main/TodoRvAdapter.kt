@@ -9,7 +9,11 @@ import com.example.siliconvalleyjobfair.data.Todo
 import com.example.siliconvalleyjobfair.data.TodoDatabase
 import kotlinx.android.synthetic.main.item_todo.view.*
 
-class TodoRvAdapter(private val context: Context, private val clickEvent: (todo: Todo) -> Unit) :
+class TodoRvAdapter(
+    private val context: Context,
+    private val clickItemEvent: (str: String) -> Unit,
+    private val clickEditEvent: (todo: Todo) -> Unit
+) :
     RecyclerView.Adapter<TodoRvAdapter.TodoViewHolder>() {
 
     private val todoList = mutableListOf<Todo>()
@@ -40,28 +44,49 @@ class TodoRvAdapter(private val context: Context, private val clickEvent: (todo:
         holder.bindView(todoList[position])
     }
 
+    fun swapItems(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                todoList[i] = todoList.set(i + 1, todoList[i])
+            }
+        } else {
+            for (i in fromPosition..toPosition + 1) {
+                todoList[i] = todoList.set(i - 1, todoList[i])
+            }
+        }
+
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
     inner class TodoViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.item_todo, parent, false
         )
     ) {
         private val tvTitle = itemView.tv_title
-        private val btEdit = itemView.bt_edit
-        private val btDelete = itemView.bt_delete
+        private val ivEdit = itemView.iv_edit
+        private val ivDelete = itemView.iv_delete
+        private val tvDeadline = itemView.tv_deadline
 
         init {
-            btEdit.setOnClickListener {
-                clickEvent(todoList[adapterPosition])
+            tvTitle.setOnClickListener {
+                clickItemEvent(todoList[adapterPosition].content)
             }
 
-            btDelete.setOnClickListener {
+            ivEdit.setOnClickListener {
+                clickEditEvent(todoList[adapterPosition])
+            }
+
+            ivDelete.setOnClickListener {
                 deleteItem(adapterPosition)
             }
         }
 
         fun bindView(item: Todo) {
             tvTitle.text = item.title
-        }
 
+            if (item.month != 0)
+                tvDeadline.text = String.format("%d.%d", item.month, item.day)
+        }
     }
 }

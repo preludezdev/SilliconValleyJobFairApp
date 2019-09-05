@@ -3,6 +3,7 @@ package com.example.siliconvalleyjobfair.ui.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.siliconvalleyjobfair.R
 import com.example.siliconvalleyjobfair.data.Todo
@@ -12,7 +13,8 @@ import com.example.siliconvalleyjobfair.ui.edittodo.EditTodoActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private val todoRvAdapter = TodoRvAdapter(this) { editEvent(it) }
+    private val todoRvAdapter = TodoRvAdapter(this, { clickItemEvent(it) }, { clickEditEvent(it) })
+
     private lateinit var db: TodoDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
         initEvent()
         initDB()
-
     }
 
     private fun initRecyclerView() {
@@ -42,7 +43,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun editEvent(todo: Todo) {
+    private fun clickItemEvent(str: String) {
+        if (str.isEmpty()) {
+            Toast.makeText(this, "내용 없음", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(this, str, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun clickEditEvent(todo: Todo) {
         startActivityForResult(Intent(this, EditTodoActivity::class.java).apply {
             putExtra("todo", todo)
         }, 1)
