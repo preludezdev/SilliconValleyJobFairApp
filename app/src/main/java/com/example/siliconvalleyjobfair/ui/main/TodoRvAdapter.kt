@@ -44,20 +44,6 @@ class TodoRvAdapter(
         holder.bindView(todoList[position])
     }
 
-    fun swapItems(fromPosition: Int, toPosition: Int) {
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                todoList[i] = todoList.set(i + 1, todoList[i])
-            }
-        } else {
-            for (i in fromPosition..toPosition + 1) {
-                todoList[i] = todoList.set(i - 1, todoList[i])
-            }
-        }
-
-        notifyItemMoved(fromPosition, toPosition)
-    }
-
     inner class TodoViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.item_todo, parent, false
